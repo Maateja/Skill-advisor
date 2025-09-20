@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | CareerPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .profile-container {
+            max-width: 600px;
+            margin: 80px auto 20px;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .profile-header h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+        .profile-header p {
+            color: #666;
+        }
+        .profile-form .input-group {
+            margin-bottom: 1.5rem;
+        }
+        .profile-form label {
+            font-weight: 500;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .profile-form input, .profile-form textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .profile-form textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .save-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .save-btn:hover {
+            background-color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" style="display: flex; justify-content: center; align-items: center; height: 100vh; font-size: 24px; color: #555;">
+        Loading...
+    </div>
+
+    <div id="app-content-container" style="display: none;">
+        <header>
+            <nav class="premium-nav">
+                <div class="logo">
+                    <i class="fas fa-briefcase"></i>
+                    <span>CareerPro</span>
+                </div>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="index.html#assessment">Assessment</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="index.html#roadmap">Career Roadmap</a></li>
+                </ul>
+                <div class="auth-links">
+                    <a href="login.html" class="login-btn" id="login-signup-link" style="display: none;">Log In / Sign Up</a>
+                    <div id="user-profile" class="user-dropdown" style="display: none;">
+                        <i class="fas fa-user-circle"></i>
+                        <div class="dropdown-content">
+                            <a href="profile.html">Profile</a>
+                            <a href="#" id="logout-link">Log Out</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <div class="profile-container">
+                <div class="profile-header">
+                    <h2>Your Profile</h2>
+                    <p>Update your details to get more personalized recommendations.</p>
+                </div>
+                <form id="profile-form" class="profile-form">
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="Enter your username">
+                    </div>
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="skills">Skills</label>
+                        <textarea id="skills" placeholder="List your skills, separated by commas (e.g., Python, Marketing, Public Speaking)"></textarea>
+                    </div>
+                    <button type="submit" class="save-btn">Save Changes</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyBpTTk0xrFOFBEnBU62mWCgtbLbAYHZ3Is",
+          authDomain: "career-and-skill-advisor-1ce79.firebaseapp.com",
+          projectId: "career-and-skill-advisor-1ce79",
+          storageBucket: "career-and-skill-advisor-1ce79.firebasestorage.app",
+          messagingSenderId: "340590498085",
+          appId: "1:340590498085:web:914c8ee3c10517b00fcacc",
+          measurementId: "G-YC51LTSTDW"
+        };
+      
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            const loading = document.getElementById("loading");
+            const appContent = document.getElementById("app-content-container");
+            const profileForm = document.getElementById("profile-form");
+            const usernameInput = document.getElementById("username");
+            const emailInput = document.getElementById("email");
+            const skillsInput = document.getElementById("skills");
+            
+            // Listen for authentication state changes
+            auth.onAuthStateChanged(user => {
+                loading.style.display = 'none';
+                if (user) {
+                    appContent.style.display = 'block';
+                    emailInput.value = user.email;
+                    
+                    // Fetch existing user data from Firestore
+                    db.collection("users").doc(user.uid).get().then((doc) => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            usernameInput.value = userData.username || '';
+                            skillsInput.value = userData.skills || '';
+                        }
+                    }).catch(error => {
+                        console.error("Error fetching user data:", error);
+                    });
+                } else {
+                    window.location.href = "login.html";
+                }
+            });
+            
+            // Save user data on form submit
+            profileForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const user = auth.currentUser;
+                if (user) {
+                    db.collection("users").doc(user.uid).set({
+                        username: usernameInput.value,
+                        skills: skillsInput.value,
+                    }, { merge: true }).then(() => {
+                        alert("Profile updated successfully!");
+                    }).catch(error => {
+                        console.error("Error updating profile:", error);
+                        alert("Failed to update profile. Please try again.");
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

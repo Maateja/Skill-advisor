@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerPro Career Advisor | Your Personal Career Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="chat.css">
+</head>
+<body>
+
+    <div id="loading" style="display: flex; justify-content: center; align-items: center; height: 100vh; font-size: 24px; color: #555;">
+        Loading...
+    </div>
+
+    <div id="email-verification-banner" style="display:none; background-color: #f1c40f; color: #fff; text-align: center; padding: 10px; font-weight: bold;">
+        Please verify your email address to unlock all features. A verification link has been sent to your inbox.
+    </div>
+    
+    <div id="app-content-container" style="display: none;">
+        <header>
+            <nav class="premium-nav">
+                <div class="logo">
+                    <i class="fas fa-briefcase"></i>
+                    <span>CareerPro</span>
+                </div>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#assessment">Assessment</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li> <li><a href="#roadmap">Career Roadmap</a></li>
+                </ul>
+                <div class="auth-links">
+                    <a href="login.html" class="login-btn" id="login-signup-link" style="display: none;">Log In / Sign Up</a>
+                    <div id="user-profile" class="user-dropdown" style="display: none;">
+                        <i class="fas fa-user-circle"></i>
+                        <div class="dropdown-content">
+                            <a href="profile.html">Profile</a> <a href="#" id="logout-link">Log Out</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <section id="home" class="hero">
+                <div class="hero-content">
+                    <h1>Your Personal Career Success Partner</h1>
+                    <p id="welcome-message" class="hero-subtitle"></p>
+                    <p class="hero-subtitle">Get personalized career guidance from AI</p>
+                    <div class="cta-group">
+                        <a href="form.html" class="link">
+                            <button class="cta-button primary">Free Career Assessment</button>
+                        </a>
+                        <a href="roadmap.html" class="link">
+                            <button class="cta-button secondary"><i class="fas fa-calendar"></i> Create own Roadmap</button>
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80" alt="Career Growth - Team Collaboration" class="premium-image">
+                    <div class="floating-achievements">
+                        <div class="achievement-card">
+                            <i class="fas fa-rocket"></i>
+                            <span>65% Career Growth</span>
+                        </div>
+                        <div class="achievement-card">
+                            <i class="fas fa-chart-line"></i>
+                            <span>12% Salary Increase</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="features" class="content-section">
+                <h2>Why Choose CareerPro?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-robot"></i>
+                        <h3>AI-Powered Insights</h3>
+                        <p>Advanced algorithms analyze your skills and potential</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-book"></i>
+                        <h3>Study Guide</h3>
+                        <p>Curated learning materials for your career path</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>Data-Driven Planning</h3>
+                        <p>Strategic career planning based on market trends</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-certificate"></i>
+                        <h3>Skill Quiz</h3>
+                        <p>Evaluate your skills with interactive quizzes</p>
+                    </div>
+                </div>
+            </section>
+            <section id="services" class="content-section-1">
+                <div class="section-header">
+                    <h2>Career Making Services</h2>
+                    <p class="section-subtitle">Transforming careers with cutting-edge technology and expert guidance</p>
+                </div>
+                <div class="services-grid">
+                    <div class="service-card premium-card">
+                        <div class="service-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>AI-Powered Assessment</h3>
+                        <p>Advanced personality and skill analysis</p>
+                        <ul class="service-features">
+                            <li><i class="fas fa-check-circle"></i> Personality Profiling</li>
+                            <li><i class="fas fa-check-circle"></i> Skill Gap Analysis</li>
+                            <li><i class="fas fa-check-circle"></i> Market Fit Assessment</li>
+                        </ul>
+                        <a href="form.html" class="link"><button class="service-cta">Start Assessment</button></a>
+                    </div>
+                    <div class="service-card premium-card">
+                        <div class="service-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3>Study Guide</h3>
+                        <p>Study guide for the career and skill advisor</p>
+                        <ul class="service-features">
+                            <li><i class="fas fa-check-circle"></i> Personalized Learning Path</li>
+                            <li><i class="fas fa-check-circle"></i> Curated Resources</li>
+                            <li><i class="fas fa-check-circle"></i> Progress Tracking</li>
+                        </ul>
+                        <button class="service-cta">Explore Guides</button>
+                    </div>
+                    <div class="service-card premium-card">
+                        <div class="service-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h3>Skill Quiz</h3>
+                        <p>Personalized skill quizzes to assess your capabilities</p>
+                        <ul class="service-features">
+                            <li><i class="fas fa-check-circle"></i> Comprehensive Skill Check</li>
+                            <li><i class="fas fa-check-circle"></i> Performance Insights</li>
+                            <li><i class="fas fa-check-circle"></i> Targeted Skill Recommendations</li>
+                        </ul>
+                        <a href="quiz.html" class="link"><button class="service-cta">Take a Quiz</button></a>
+                    </div>
+                    <div class="service-card premium-card">
+                        <div class="service-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Resume Enhancement</h3>
+                        <p>Professional resume and cover letter optimization</p>
+                        <ul class="service-features">
+                            <li><i class="fas fa-check-circle"></i> Expert Feedback</li>
+                            <li><i class="fas fa-check-circle"></i> Custom Templates</li>
+                            <li><i class="fas fa-check-circle"></i> ATS Compatibility</li>
+                        </ul>
+                        <button class="service-cta">Enhance Resume</button>
+                    </div>
+                </div>
+            </section>
+            <section id="assessment" class="content-section gradient-bg">
+                <h2>Career Assessment</h2>
+                <div class="assessment-container">
+                    <div class="assessment-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <h3>Personality Analysis</h3>
+                            <p>Advanced psychometric evaluation</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <h3>Skills Assessment</h3>
+                            <p>Comprehensive skill mapping</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <h3>Career Matching</h3>
+                            <p>AI-powered career recommendations</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="roadmap" class="content-section-1">
+                <h2>Your Career Roadmap</h2>
+                <div class="roadmap-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Career Assessment</h3>
+                            <p>Discover your strengths and potential</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Goal Setting</h3>
+                            <p>Define your career objectives</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Skill Development</h3>
+                            <p>Targeted learning recommendations</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Career Success</h3>
+                            <p>Achieve your career goals</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="skills" class="content-section gradient-bg">
+                <div class="section-header-1  light">
+                    <h2>Master In-Demand Skills</h2>
+                    <p class="section-subtitle">Guided learning paths tailored to your career goals</p>
+                </div>
+                <div class="skills-carousel">
+                    <div class="skill-category">
+                        <div class="skill-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3>Technical Skills</h3>
+                        <div class="skill-progress">
+                            <div class="progress-bar" data-progress="90">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <span class="skill-name">Programming</span>
+                        </div>
+                        <div class="skill-progress">
+                            <div class="progress-bar" data-progress="85">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <span class="skill-name">Data Analysis</span>
+                        </div>
+                        <div class="progress-bar" data-progress="80">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <span class="skill-name">Cloud Computing</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <div class="skill-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <h3>Soft Skills</h3>
+                        <div class="skill-progress">
+                            <div class="progress-bar" data-progress="95">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <span class="skill-name">Leadership</span>
+                        </div>
+                        <div class="skill-progress">
+                            <div class="progress-bar" data-progress="88">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <span class="skill-name">Communication</span>
+                        </div>
+                        <div class="skill-progress">
+                            <div class="progress-bar" data-progress="92">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <span class="skill-name">Problem Solving</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="career-insights" class="content-section-1">
+                <div class="section-header">
+                    <h2>Latest Career Trends</h2>
+                    <p class="section-subtitle">Stay ahead with real-time market analysis</p>
+                </div>
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <i class="fas fa-lightbulb"></i>
+                            <span class="trend-badge hot">Hot Trend</span>
+                        </div>
+                        <h3>AI & Machine Learning</h3>
+                        <p>Growing demand for AI specialists with 40% salary premium</p>
+                        <div class="trend-stats">
+                            <span><i class="fas fa-chart-line"></i> 125% YoY Growth</span>
+                            <span><i class="fas fa-dollar-sign"></i> 150K Avg. Salary</span>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <i class="fas fa-cloud"></i>
+                            <span class="trend-badge emerging">Emerging</span>
+                        </div>
+                        <h3>Cloud Architecture</h3>
+                        <p>Cloud specialists are among the highest-paid tech professionals</p>
+                        <div class="trend-stats">
+                            <span><i class="fas fa-chart-line"></i> 85% YoY Growth</span>
+                            <span><i class="fas fa-dollar-sign"></i> 140K Avg. Salary</span>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <i class="fas fa-shield-alt"></i>
+                            <span class="trend-badge stable">Stable</span>
+                        </div>
+                        <h3>Cybersecurity</h3>
+                        <p>Critical demand for security experts across industries</p>
+                        <div class="trend-stats">
+                            <span><i class="fas fa-chart-line"></i> 65% YoY Growth</span>
+                            <span><i class="fas fa-dollar-sign"></i> 130K Avg. Salary</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="premium-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>CareerPro</h4>
+                    <p>Your ultimate career and skill advisor powered by AI.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#assessment">Assessment</a></li>
+                        <li><a href="#roadmap">Career Roadmap</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Help & Support</h4>
+                    <p><i class="fas fa-envelope"></i> support@careerpro.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 CareerPro Advisor. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+    
+    <button class="chatbot-toggle" id="chatbot-toggle">
+        <i class="fas fa-comments"></i>
+    </button>
+    
+    <div class="chatbot-container" id="chatbot-container">
+        <div class="chatbot-header">
+            <h3>AI Career Assistant</h3>
+            <button class="chatbot-close" id="chatbot-close">&times;</button>
+        </div>
+        <div class="chatbot-body" id="chatbot-body">
+            <div class="message bot-message">Hi! How can I help with your career path today?</div>
+        </div>
+        <div class="chatbot-input-container">
+            <input type="text" id="chatbot-input" placeholder="Type your message..." />
+            <button id="chatbot-send"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

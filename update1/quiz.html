@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Quiz | CareerPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .quiz-page-container {
+            padding: 80px 2rem 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .quiz-container h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+        
+        .quiz-prompt-container, .quiz-questions-container {
+            display: none;
+            flex-direction: column;
+            gap: 1.5rem;
+            text-align: center;
+        }
+        
+        .quiz-prompt-container.active {
+            display: flex;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .cta-button.secondary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        #skill-input-container, #difficulty-container {
+            margin-top: 2rem;
+        }
+
+        #user-skills-input, #difficulty-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .quiz-question {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .quiz-question h4 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .quiz-option {
+            background-color: #fff;
+            padding: 0.75rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .quiz-option input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+        
+        .quiz-option:hover {
+            background-color: #e9ecef;
+        }
+
+        .quiz-option.correct {
+            background-color: #e8f5e9;
+            border-color: #4caf50;
+        }
+        
+        .quiz-option.incorrect {
+            background-color: #ffebee;
+            border-color: #f44336;
+        }
+        
+        .result-feedback {
+            margin-top: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .correct-answer {
+            color: #4caf50;
+        }
+
+        .incorrect-feedback {
+            color: #f44336;
+        }
+
+        .quiz-feedback-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+            text-align: left;
+        }
+        
+        #submit-quiz-btn {
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" style="display: flex; justify-content: center; align-items: center; height: 100vh; font-size: 24px; color: #555;">
+        Loading...
+    </div>
+
+    <div id="app-content-container" style="display: none;">
+        <header>
+            <nav class="premium-nav">
+                <div class="logo">
+                    <i class="fas fa-briefcase"></i>
+                    <span>CareerPro</span>
+                </div>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="index.html#assessment">Assessment</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="index.html#roadmap">Career Roadmap</a></li>
+                </ul>
+                <div class="auth-links">
+                    <a href="login.html" class="login-btn" id="login-signup-link" style="display: none;">Log In / Sign Up</a>
+                    <div id="user-profile" class="user-dropdown" style="display: none;">
+                        <i class="fas fa-user-circle"></i>
+                        <div class="dropdown-content">
+                            <a href="profile.html">Profile</a>
+                            <a href="#" id="logout-link">Log Out</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <div class="quiz-page-container">
+                <div class="quiz-container">
+                    <h2>Skill Quiz</h2>
+
+                    <div id="quiz-prompt-container" class="quiz-prompt-container active">
+                        <h3>Let's Assess Your Skills</h3>
+                        <p>Please choose an option to get started:</p>
+                        <div class="modal-buttons">
+                            <button class="cta-button primary" onclick="showSkillInput()">I have skills</button>
+                            <button class="cta-button secondary" onclick="redirectToAssessment()">I have no skills</button>
+                        </div>
+                        
+                        <div id="skill-input-container" style="display:none;">
+                            <p>What skills do you want to be quizzed on?</p>
+                            <input type="text" id="user-skills-input" placeholder="Enter your skills, separated by commas" class="text-input">
+                            <div id="difficulty-container" style="display:none; margin-top: 1rem;">
+                                <label for="difficulty-select">Select Difficulty:</label>
+                                <select id="difficulty-select">
+                                    <option value="beginner">Beginner</option>
+                                    <option value="intermediate">Intermediate</option>
+                                    <option value="expert">Expert</option>
+                                    <option value="master">Master</option>
+                                </select>
+                            </div>
+                            <button class="cta-button primary" style="margin-top:1rem;" onclick="generateQuiz()">Start Quiz</button>
+                        </div>
+                    </div>
+
+                    <div id="quiz-questions-container" class="quiz-questions-container">
+                        <div id="questions-container"></div>
+                        <button id="submit-quiz-btn" class="cta-button primary" onclick="submitQuiz()" style="display:none;">Submit Quiz</button>
+                    </div>
+                    
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
