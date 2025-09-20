@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextStep Career Advisor | Login & Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-form" id="signup-form-container" style="display: none;">
+            <h2>Create an Account</h2>
+            <form id="signup-form">
+                <div class="input-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" placeholder="Enter your email" required>
+                </div>
+                <div class="input-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="Enter a password" required>
+                </div>
+                <button class="auth-button" type="submit">Sign Up</button>
+            </form>
+            <p class="switch-form">Already have an account? <a href="#" onclick="showForm('login')">Log In</a></p>
+        </div>
+
+        <div class="auth-form" id="login-form-container" style="display: block;">
+            <h2>Log In</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" required>
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+                <button class="auth-button" type="submit">Log In</button>
+            </form>
+            <p class="forgot-password-link"><a href="#" onclick="showForm('forgotPassword')">Forgot Password?</a></p>
+            <p class="switch-form">Don't have an account? <a href="#" onclick="showForm('signup')">Sign Up</a></p>
+        </div>
+
+        <div class="auth-form" id="forgot-password-form-container" style="display: none;">
+            <h2>Reset Password</h2>
+            <form id="forgot-password-form">
+                <div class="input-group">
+                    <label for="forgot-password-email">Email</label>
+                    <input type="email" id="forgot-password-email" placeholder="Enter your email" required>
+                </div>
+                <button class="auth-button" type="submit">Send Reset Email</button>
+            </form>
+            <p class="switch-form">Back to <a href="#" onclick="showForm('login')">Log In</a></p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+      // Your Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBpTTk0xrFOFBEnBU62mWCgtbLbAYHZ3Is",
+        authDomain: "career-and-skill-advisor-1ce79.firebaseapp.com",
+        projectId: "career-and-skill-advisor-1ce79",
+        storageBucket: "career-and-skill-advisor-1ce79.firebasestorage.app",
+        messagingSenderId: "340590498085",
+        appId: "1:340590498085:web:914c8ee3c10517b00fcacc",
+        measurementId: "G-YC51LTSTDW"
+      };
+
+      // Initialize Firebase once
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      function showForm(formId) {
+          document.getElementById('signup-form-container').style.display = 'none';
+          document.getElementById('login-form-container').style.display = 'none';
+          document.getElementById('forgot-password-form-container').style.display = 'none';
+
+          if (formId === 'login') {
+              document.getElementById('login-form-container').style.display = 'block';
+          } else if (formId === 'signup') {
+              document.getElementById('signup-form-container').style.display = 'block';
+          } else if (formId === 'forgotPassword') {
+              document.getElementById('forgot-password-form-container').style.display = 'block';
+          }
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        const loginForm = document.getElementById("login-form");
+        const signupForm = document.getElementById("signup-form");
+        const forgotPasswordForm = document.getElementById("forgot-password-form");
+
+        // Sign-up Form Logic
+        if (signupForm) {
+            signupForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const email = signupForm.querySelector('#signup-email').value;
+                const password = signupForm.querySelector('#signup-password').value;
+
+                if (!email || !password) {
+                    alert("Please enter both email and password.");
+                    return;
+                }
+                if (password.length < 6) {
+                    alert("Password must be at least 6 characters long.");
+                    return;
+                }
+
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        console.log("User signed up successfully:", user.uid);
+                        
+                        // Send email verification link
+                        user.sendEmailVerification()
+                            .then(() => {
+                                alert("A verification link has been sent to your email. Please verify your email to log in.");
+                                // Redirect to login page or show a message
+                                showForm('login');
+                            })
+                            .catch((error) => {
+                                console.error("Error sending verification email:", error.message);
+                                alert("Error sending verification email: " + error.message);
+                            });
+
+                        // Save user data to Firestore
+                        return db.collection("users").doc(user.uid).set({
+                            email: email,
+                            emailVerified: false,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    })
+                    .catch((error) => {
+                        let errorMessage = "An unknown error occurred. Please try again.";
+                        if (error.code === 'auth/invalid-email') {
+                            errorMessage = "Error creating account: Invalid email format.";
+                        } else if (error.code === 'auth/email-already-in-use') {
+                            errorMessage = "Error creating account: This email is already registered.";
+                        } else if (error.code === 'auth/weak-password') {
+                            errorMessage = "Error creating account: The password is too weak. Please choose a stronger password.";
+                        }
+                        console.error("Sign-up Error:", error.message);
+                        alert(errorMessage);
+                    });
+            });
+        }
+
+        // Login Form Logic
+        if (loginForm) {
+            loginForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const email = loginForm.querySelector('#login-email').value;
+                const password = loginForm.querySelector('#login-password').value;
+
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        if (user.emailVerified) {
+                            window.location.href = "index.html";
+                        } else {
+                            // User is not verified, log them out and show a message
+                            auth.signOut();
+                            alert("Your email is not verified. Please check your inbox for the verification link.");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Login Error:", error.message);
+                        alert("Error logging in: " + error.message);
+                    });
+            });
+        }
+
+        // Forgot Password Logic
+        if (forgotPasswordForm) {
+            forgotPasswordForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const email = forgotPasswordForm.querySelector('#forgot-password-email').value;
+
+                if (!email) {
+                    alert("Please enter your email address.");
+                    return;
+                }
+
+                auth.sendPasswordResetEmail(email)
+                    .then(() => {
+                        alert("A password reset link has been sent to your email address.");
+                        showForm('login');
+                    })
+                    .catch((error) => {
+                        console.error("Password Reset Error:", error.message);
+                        alert("Error sending password reset email: " + error.message);
+                    });
+            });
+        }
+      });
+    </script>
+</body>
+</html>

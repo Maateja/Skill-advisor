@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextStep Career Advisor | Your Personal Career Guide</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --primary: #4361ee;
+      --secondary: #3a0ca3;
+      --accent: #4cc9f0;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --success: #4bb543;
+      --gray: #6c757d;
+      --light-gray: #e9ecef;
+      --border-radius: 12px;
+      --shadow: 0 10px 25px rgba(0,0,0,0.05);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 25px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-weight: 600;
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+    }
+    
+    .header p {
+      font-weight: 300;
+      opacity: 0.9;
+    }
+    
+    .form-container {
+      padding: 30px;
+      position: relative;
+      min-height: 400px;
+    }
+    
+    .form-step {
+      display: none;
+      opacity: 0;
+      transform: translateX(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    
+    .form-step.active {
+      display: block;
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--dark);
+    }
+    
+    select, input[type="text"] {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--light-gray);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      transition: var(--transition);
+      background-color: var(--light);
+    }
+    
+    select:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    }
+    
+    .custom-input {
+      margin-top: 10px;
+      display: none;
+    }
+    
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+    
+    button {
+      padding: 14px 28px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    button:hover {
+      background: var(--secondary);
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button.prev {
+      background: var(--gray);
+    }
+    
+    button.prev:hover {
+      background: #5a6268;
+    }
+    
+    button:disabled {
+      background: var(--light-gray);
+      color: var(--gray);
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .progress-container {
+      padding: 15px 30px;
+      background: var(--light);
+      display: flex;
+      align-items: center;
+    }
+    
+    .progress-bar {
+      flex-grow: 1;
+      height: 8px;
+      background: var(--light-gray);
+      border-radius: 4px;
+      margin: 0 15px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 4px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+    
+    .progress-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray);
+      min-width: 50px;
+      text-align: right;
+    }
+    
+    .result-container {
+      padding: 30px;
+      display: none;
+    }
+    
+    .result-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+    
+    .result-header i {
+      font-size: 24px;
+      margin-right: 12px;
+    }
+    
+    .result-header h3 {
+      font-weight: 600;
+      font-size: 1.4rem;
+    }
+    
+    .career-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .career-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border-left: 4px solid var(--accent);
+      transition: transform 0.3s ease;
+      width: 100%;
+      cursor: pointer;
+    }
+    
+    .career-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    
+    .career-card h4 {
+      color: var(--primary);
+      margin-bottom: 10px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--light-gray);
+      padding-bottom: 8px;
+    }
+    
+    .career-card p {
+      margin-bottom: 8px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .card-icon {
+      font-size: 24px;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    
+    .salary-tag {
+      display: inline-block;
+      background: rgba(76, 201, 240, 0.1);
+      color: var(--accent);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 5px 5px 5px 0;
+    }
+    
+    .loader {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .loader .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--light-gray);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .restart-btn {
+      margin-top: 30px;
+      background: var(--gray);
+      width: auto;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+    }
+    
+    .restart-btn:hover {
+      background: #5a6268;
+    }
+    
+    /* Roadmap Modal Styles */
+    .roadmap-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      z-index: 1000;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    
+    .roadmap-content {
+      background-color: white;
+      margin: 40px auto;
+      border-radius: var(--border-radius);
+      width: 100%;
+      max-width: 900px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .roadmap-header {
+      background: var(--primary);
+      color: white;
+      padding: 20px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .roadmap-header h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    .close-modal {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 5px;
+    }
+    
+    .roadmap-body {
+      padding: 30px;
+    }
+    
+    .roadmap-intro {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--light-gray);
+    }
+    
+    /* Tree-like roadmap layout */
+    .roadmap-tree {
+      position: relative;
+      padding: 20px 0;
+    }
+    
+    .tree-node {
+      position: relative;
+      padding-left: 30px;
+      margin-bottom: 25px;
+    }
+    
+    .tree-node:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 2px;
+      height: 100%;
+      background: var(--primary);
+      opacity: 0.3;
+    }
+    
+    .tree-node:after {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 0;
+      width: 20px;
+      height: 2px;
+      background: var(--primary);
+      opacity: 0.3;
+    }
+    
+    .node-content {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-left: 3px solid var(--primary);
+      position: relative;
+    }
+    
+    .node-title {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .node-title i {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+    
+    .node-desc {
+      font-size: 14px;
+      color: var(--dark);
+      line-height: 1.5;
+    }
+    
+    .tree-children {
+      margin-top: 15px;
+      padding-left: 30px;
+      position: relative;
+    }
+    
+    .tree-children:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 2px;
+      height: 100%;
+      background: var(--accent);
+      opacity: 0.2;
+    }
+    
+    .roadmap-download-btn {
+      background: var(--success);
+      margin-top: 20px;
+    }
+    
+    .roadmap-download-btn:hover {
+      background: #3d9936;
+    }
+    
+    .roadmap-footer {
+      padding: 20px;
+      background-color: var(--light);
+      text-align: center;
+      border-top: 1px solid var(--light-gray);
+    }
+    
+    .roadmap-loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 300px;
+      flex-direction: column;
+    }
+
+    /* PDF specific styles */
+    .pdf-header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--primary);
+    }
+    
+    .pdf-title {
+      color: var(--primary);
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    .pdf-subtitle {
+      color: var(--gray);
+      font-size: 16px;
+    }
+    
+    .pdf-date {
+      color: var(--gray);
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    
+    .pdf-section {
+      margin-bottom: 20px;
+    }
+    
+    .pdf-section-title {
+      color: var(--primary);
+      font-size: 18px;
+      margin-bottom: 10px;
+      padding-left: 10px;
+      border-left: 3px solid var(--primary);
+    }
+    
+    .pdf-node {
+      margin-bottom: 15px;
+      padding-left: 20px;
+      border-left: 2px solid var(--light-gray);
+    }
+    
+    .pdf-node-title {
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+    
+    .pdf-node-desc {
+      color: var(--gray);
+      font-size: 14px;
+    }
+    
+    .pdf-footer {
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid var(--light-gray);
+      text-align: center;
+      color: var(--gray);
+      font-size: 14px;
+    }
+    
+    /* Print styles for roadmap download */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .roadmap-content, .roadmap-content * {
+        visibility: visible;
+      }
+      .roadmap-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        box-shadow: none;
+      }
+      .roadmap-download-btn, .close-modal {
+        display: none !important;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      
+      .form-container, .result-container {
+        padding: 20px 15px;
+      }
+      
+      select, input[type="text"] {
+        padding: 12px;
+      }
+      
+      button {
+        padding: 12px 20px;
+        font-size: 14px;
+      }
+      
+      .career-cards {
+        max-width: 100%;
+      }
+      
+      .roadmap-body {
+        padding: 20px 15px;
+      }
+      
+      .tree-node {
+        padding-left: 20px;
+      }
+      
+      .tree-children {
+        padding-left: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1> NextStep Career Path Finder - India</h1>
+      <p>Discover your ideal career in the Indian job market</p>
+    </div>
+    
+    <div class="progress-container">
+      <div class="progress-text">Step 1 of 5</div>
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+      <div class="progress-text">20%</div>
+    </div>
+    
+    <div class="form-container">
+      <form id="careerForm">
+        </form>
+    </div>
+    
+    <div class="loader">
+      <div class="spinner"></div>
+      <p style="margin-top: 15px;">Analyzing your responses for Indian career options...</p>
+    </div>
+    
+    <div class="result-container">
+      <div class="result-header">
+        <i class="fas fa-robot"></i>
+        <h3>Your Career Matches for Indian Market</h3>
+      </div>
+      <p>Based on your answers, we've identified these career paths that align with your skills and interests in the Indian job market:</p>
+      <div class="career-cards" id="careerCards">
+        </div>
+      <button class="restart-btn" onclick="restartForm()"><i class="fas fa-redo"></i> Start Again</button>
+    </div>
+  </div>
+
+  <div class="roadmap-modal" id="roadmapModal">
+    <div class="roadmap-content">
+      <div class="roadmap-header">
+        <h2 id="roadmapTitle">Career Roadmap</h2>
+        <button class="close-modal" onclick="closeRoadmap()">&times;</button>
+      </div>
+      <div class="roadmap-body" id="roadmapBody">
+        <div class="roadmap-loader">
+          <div class="spinner"></div>
+          <p style="margin-top: 15px;">Generating your career roadmap...</p>
+        </div>
+      </div>
+      <div class="roadmap-footer">
+        <p>NextStep Career Advisor | Your Personal Career Guide </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize jsPDF
+    window.jsPDF = window.jspdf.jsPDF;
+
+    const questions = [
+      "Subjects you enjoy",
+      "Preferred work environment",
+      "Your skills",
+      "Motivation (Salary/Growth/Passion)",
+      "Teamwork or Independent",
+      "Dream career",
+      "Strengths",
+      "Weaknesses",
+      "Hobbies",
+      "Future goals"
+    ];
+
+    const options = [
+      ["Math", "Science", "Arts", "Commerce", "Technology"],
+      ["Office", "Remote", "Hybrid", "Outdoor", "Travel-heavy"],
+      ["Communication", "Problem-solving", "Creativity", "Leadership", "Technical"],
+      ["High Salary", "Job Security", "Passion", "Growth Opportunities", "Flexibility"],
+      ["Teamwork", "Independent", "Leadership", "Collaboration", "Flexible"],
+      ["Doctor", "Engineer", "Entrepreneur", "Artist", "Scientist"],
+      ["Discipline", "Hardworking", "Quick Learner", "Adaptable", "Innovative"],
+      ["Procrastination", "Impatience", "Perfectionism", "Shyness", "Overthinking"],
+      ["Sports", "Music", "Reading", "Gaming", "Traveling"],
+      ["Wealth", "Knowledge", "Fame", "Helping Others", "Freedom"]
+    ];
+
+    const form = document.getElementById("careerForm");
+    const progressFill = document.querySelector('.progress-fill');
+    const progressText = document.querySelectorAll('.progress-text');
+    let currentStep = 0;
+    const stepCount = Math.ceil(questions.length / 2);
+
+    // Create form steps (each with 2 questions)
+    for (let i = 0; i < stepCount; i++) {
+      const step = document.createElement('div');
+      step.className = `form-step${i === 0 ? ' active' : ''}`;
+      step.id = `step-${i}`;
+      
+      for (let j = 0; j < 2; j++) {
+        const questionIndex = i * 2 + j;
+        if (questionIndex >= questions.length) break;
+        
+        const formGroup = document.createElement("div");
+        formGroup.className = "form-group";
+        
+        const label = document.createElement("label");
+        label.innerText = `${questionIndex + 1}. ${questions[questionIndex]}`;
+        formGroup.appendChild(label);
+
+        const select = document.createElement("select");
+        select.name = `q${questionIndex + 1}`;
+        select.required = true;
+        
+        // Add default option
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = `Select an option`;
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        select.appendChild(defaultOption);
+        
+        options[questionIndex].forEach(opt => {
+          const option = document.createElement("option");
+          option.value = opt;
+          option.textContent = opt;
+          select.appendChild(option);
+        });
+
+        const customOption = document.createElement("option");
+        customOption.value = "custom";
+        customOption.textContent = "Other (please specify)";
+        select.appendChild(customOption);
+
+        formGroup.appendChild(select);
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = "Enter your answer";
+        input.className = "custom-input";
+        input.name = `q${questionIndex + 1}_custom`;
+        formGroup.appendChild(input);
+
+        select.addEventListener("change", () => {
+          input.style.display = select.value === "custom" ? "block" : "none";
+          validateStep(i);
+        });
+
+        step.appendChild(formGroup);
+      }
+      
+      form.appendChild(step);
+    }
+
+    // Add navigation buttons to each step
+    const steps = document.querySelectorAll('.form-step');
+    steps.forEach((step, index) => {
+      const buttons = document.createElement("div");
+      buttons.className = "buttons";
+      
+      if (index > 0) {
+        const prevButton = document.createElement("button");
+        prevButton.type = "button";
+        prevButton.className = "prev";
+        prevButton.innerHTML = '<i class="fas fa-arrow-left"></i> Previous';
+        prevButton.addEventListener("click", () => changeStep(index - 1));
+        buttons.appendChild(prevButton);
+      } else {
+        const spacer = document.createElement("div");
+        buttons.appendChild(spacer);
+      }
+      
+      if (index < stepCount - 1) {
+        const nextButton = document.createElement("button");
+        nextButton.type = "button";
+        nextButton.className = "next";
+        nextButton.innerHTML = 'Next <i class="fas fa-arrow-right"></i>';
+        nextButton.id = `next-${index}`;
+        nextButton.disabled = true;
+        nextButton.addEventListener("click", () => changeStep(index + 1));
+        buttons.appendChild(nextButton);
+      } else {
+        const submitButton = document.createElement("button");
+        submitButton.type = "submit";
+        submitButton.id = "submit-btn";
+        submitButton.innerHTML = '<i class="fas fa-search"></i> Get Career Suggestions';
+        submitButton.disabled = true;
+        buttons.appendChild(submitButton);
+      }
+      
+      step.appendChild(buttons);
+    });
+
+    // Update progress bar
+    function updateProgress(step) {
+      const percent = ((step + 1) / stepCount) * 100;
+      progressFill.style.width = `${percent}%`;
+      progressText[0].textContent = `Step ${step + 1} of ${stepCount}`;
+      progressText[1].textContent = `${Math.round(percent)}%`;
+    }
+
+    // Change step with animation
+    function changeStep(step) {
+      // Validate if we can proceed to next step
+      if (step > currentStep && !validateStep(currentStep)) {
+        return;
+      }
+      
+      // Hide current step
+      steps[currentStep].classList.remove('active');
+      
+      // Show new step
+      currentStep = step;
+      steps[currentStep].classList.add('active');
+      
+      // Update progress
+      updateProgress(currentStep);
+    }
+
+    // Validate current step
+    function validateStep(step) {
+      let isValid = true;
+      const stepElements = steps[step].querySelectorAll('select');
+      
+      stepElements.forEach(select => {
+        if (!select.value) {
+          isValid = false;
+        }
+      });
+      
+      // Enable/disable next button based on validation
+      if (step < stepCount - 1) {
+        document.getElementById(`next-${step}`).disabled = !isValid;
+      } else {
+        document.getElementById('submit-btn').disabled = !isValid;
+      }
+      
+      return isValid;
+    }
+
+    // Add change events to all selects for validation
+    document.querySelectorAll('select').forEach(select => {
+      select.addEventListener('change', function() {
+        const step = Math.floor(Array.from(steps).indexOf(this.closest('.form-step')));
+        validateStep(step);
+      });
+    });
+
+    // Initialize progress
+    updateProgress(0);
+
+    // Replace with your Google Gemini API key
+    const API_KEY = "AIzaSyCDk3rl5Qba-VXM8DbgN6h0ofbSmWwHX-Y";
+
+    form.addEventListener("submit", async function(e) {
+      e.preventDefault();
+      
+      // Show loader, hide form and progress
+      document.querySelector('.loader').style.display = 'block';
+      document.querySelector('.form-container').style.display = 'none';
+      document.querySelector('.progress-container').style.display = 'none';
+      
+      let answers = {};
+      questions.forEach((q, i) => {
+        const select = form.querySelector(`select[name=q${i+1}]`);
+        const input = form.querySelector(`input[name=q${i+1}_custom]`);
+        answers[q] = (select.value === "custom" && input.value) ? input.value : select.value;
+      });
+
+      const prompt = "Based on these answers to career assessment questions, suggest 7-8 specific career options with a brief explanation for each (50-75 words per career) that are relevant to the INDIAN job market. Include typical salary ranges in INR for entry-level positions in India. Format the response as a JSON array of objects with 'title', 'description', 'salary', and 'icon' properties for each career. The icon should be a relevant FontAwesome icon class (like 'fas fa-code' for programming).\n\n" +
+        JSON.stringify(answers, null, 2);
+
+      try {
+        // Gemini API request
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${API_KEY}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: prompt
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 2000
+            }
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        // Extract the text from Gemini response
+        const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response from AI";
+        
+        // Try to parse the JSON response
+        try {
+          // Extract JSON from the response if it's wrapped in markdown code blocks
+          let jsonString = aiResponse;
+          const jsonMatch = aiResponse.match(/```json\n([\s\S]*?)\n```/) || aiResponse.match(/```\n([\s\S]*?)\n```/);
+          if (jsonMatch) {
+            jsonString = jsonMatch[1];
+          }
+          
+          const careers = JSON.parse(jsonString);
+          displayCareerCards(careers);
+        } catch (e) {
+          console.error("Error parsing JSON:", e);
+          // If JSON parsing fails, display the raw response with a note
+          document.getElementById('careerCards').innerHTML = 
+            `<div class="career-card">
+              <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+              <h4>Response Format Issue</h4>
+              <p>We encountered an issue formatting the response. Here's the raw analysis:</p>
+              <p>${aiResponse}</p>
+            </div>`;
+        }
+      } catch (error) {
+        console.error("Error fetching career suggestions:", error);
+        document.getElementById('careerCards').innerHTML = 
+          `<div class="career-card">
+            <div class="card-icon"><i class="fas fa-exclamation-circle"></i></div>
+            <h4>Connection Issue</h4>
+            <p>Sorry, we encountered an error processing your request. This might be due to high demand or a temporary service interruption.</p>
+            <p>Please try again in a few moments, or check your internet connection.</p>
+          </div>`;
+      } finally {
+        document.querySelector('.loader').style.display = 'none';
+        document.querySelector('.result-container').style.display = 'block';
+        
+        // Scroll to results
+        document.querySelector('.result-container').scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }
+    });
+
+    // Display career cards
+    function displayCareerCards(careers) {
+      const careerCards = document.getElementById('careerCards');
+      careerCards.innerHTML = '';
+      
+      if (Array.isArray(careers) && careers.length > 0) {
+        careers.forEach(career => {
+          const card = document.createElement('div');
+          card.className = 'career-card';
+          
+          let iconClass = career.icon || 'fas fa-briefcase';
+          if (!iconClass.startsWith('fas') && !iconClass.startsWith('fa-')) {
+            iconClass = 'fas ' + iconClass;
+          }
+          
+          card.innerHTML = `
+            <div class="card-icon"><i class="${iconClass}"></i></div>
+            <h4>${career.title || 'Career Option'}</h4>
+            <p>${career.description || 'No description available.'}</p>
+            ${career.salary ? `<div class="salary-tag">${career.salary}</div>` : ''}
+          `;
+          
+          // Add click event to show roadmap
+          card.addEventListener('click', () => {
+            showRoadmap(career.title, career.description);
+          });
+          
+          careerCards.appendChild(card);
+        });
+      } else {
+        careerCards.innerHTML = `
+          <div class="career-card">
+            <div class="card-icon"><i class="fas fa-info-circle"></i></div>
+            <h4>No Career Matches Found</h4>
+            <p>We couldn't find specific career matches based on your responses. Please try again with different answers or check back later.</p>
+          </div>`;
+      }
+    }
+
+    // Show roadmap for a career
+    async function showRoadmap(careerTitle, careerDescription) {
+      const modal = document.getElementById('roadmapModal');
+      const roadmapTitle = document.getElementById('roadmapTitle');
+      const roadmapBody = document.getElementById('roadmapBody');
+      
+      // Show modal with loading state
+      roadmapTitle.textContent = `${careerTitle} Roadmap`;
+      roadmapBody.innerHTML = `
+        <div class="roadmap-loader">
+          <div class="spinner"></div>
+          <p style="margin-top: 15px;">Generating your career roadmap...</p>
+        </div>
+      `;
+      modal.style.display = 'block';
+      
+      // Disable body scrolling
+      document.body.style.overflow = 'hidden';
+      
+      try {
+        // Generate roadmap prompt
+        const roadmapPrompt = `Create a detailed career roadmap for becoming a ${careerTitle} in India. 
+        The roadmap should be structured as a hierarchical tree with main categories and sub-items.
+        Focus on the key areas of learning and development.
+        Include specific topics to learn, skills to develop, and milestones.
+        Format as a JSON object with a 'title' property and a 'sections' array. 
+        Each section should have a 'title', 'description', and 'items' array of objects with 'title' and 'description' properties.
+        Do not include any additional text outside the JSON.`;
+        
+        // Call Gemini API for roadmap
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${API_KEY}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: roadmapPrompt
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 2000
+            }
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response from AI";
+        
+        // Try to parse the JSON response
+        try {
+          let jsonString = aiResponse;
+          const jsonMatch = aiResponse.match(/```json\n([\s\S]*?)\n```/) || aiResponse.match(/```\n([\s\S]*?)\n```/);
+          if (jsonMatch) {
+            jsonString = jsonMatch[1];
+          }
+          
+          const roadmapData = JSON.parse(jsonString);
+          displayRoadmap(roadmapData, careerTitle, careerDescription);
+        } catch (e) {
+          console.error("Error parsing roadmap JSON:", e);
+          // If we can't parse the JSON, show a default roadmap
+          showDefaultRoadmap(careerTitle, careerDescription);
+        }
+      } catch (error) {
+        console.error("Error fetching career roadmap:", error);
+        // On error, show a default roadmap
+        showDefaultRoadmap(careerTitle, careerDescription);
+      }
+    }
+
+    // Display default roadmap (fallback)
+    function showDefaultRoadmap(careerTitle, careerDescription) {
+      const roadmapBody = document.getElementById('roadmapBody');
+      
+      roadmapBody.innerHTML = `
+        <div class="roadmap-intro">
+          <h3>${careerTitle}</h3>
+          <p>${careerDescription}</p>
+        </div>
+        <div class="roadmap-tree">
+          <div class="tree-node">
+            <div class="node-content">
+              <div class="node-title"><i class="fas fa-graduation-cap"></i> Foundation Skills</div>
+              <div class="node-desc">Build a strong foundation with these essential skills</div>
+            </div>
+            <div class="tree-children">
+              <div class="tree-node">
+                <div class="node-content">
+                  <div class="node-title"><i class="fas fa-book"></i> Learn the basics</div>
+                  <div class="node-desc">Fundamental concepts and principles of the field</div>
+                </div>
+              </div>
+              <div class="tree-node">
+                <div class="node-content">
+                  <div class="node-title"><i class="fas fa-cube"></i> Core Knowledge</div>
+                  <div class="node-desc">Essential theories and practices you need to master</div>
+                </div>
+              </div>
+              <div class="tree-node">
+                <div class="node-content">
+                  <div class="node-title"><i class="fas fa-globe"></i> Industry Overview</div>
+                  <div class="node-desc">Understanding the field and its applications in the real world</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tree-node">
+            <div class="node-content">
+              <div class="node-title"><i class="fas fa-laptop-code"></i> Technical Skills</div>
+              <div class="node-desc">Develop practical technical abilities</div>
+            </div>
+            <div class="tree-children">
+              <div class="tree-node">
+                <div class="node-content">
+                  <div class="node-title"><i class="fas fa-tools"></i> Tools & Technologies</div>
+                  <div class="node-desc">Industry-standard software and platforms</div>
+                </div>
+              </div>
+              <div class="tree-node">
+                <div class="node-content">
+                  <div class="node-title"><i class="fas fa-code"></i> Technical Proficiency</div>
+                  <div class="node-desc">Hands-on experience with key technologies</div>
+                </div>
+              </div>
+              <div class="tree-node">
+                <div class="node-content">
+                  <div class="node-title"><i class="fas fa-check-circle"></i> Best Practices</div>
+                  <div class="node-desc">Standards and methodologies used in the industry</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tree-node">
+            <div class="node-content">
+              <div class="node-title"><i class="fas fa-briefcase"></i> Practical Application</div>
+              <div class="node-desc">Apply your knowledge in real-world scenarios</div>
+            </div>
+            <div class="tree-children">
+              <div class="tree-node">
+                <div class="node-content">
+                  <div class="node-title"><i class="fas fa-project-diagram"></i> Projects</div>
+                  <div class="node-desc">Build portfolio pieces to demonstrate skills</div>
+                </div>
+              </div>
+              <div class="tree-node">
+                <div class="node-content">
+                  <div class="node-title"><i class="fas fa-building"></i> Internships</div>
+                  <div class="node-desc">Gain real-world experience in the field</div>
+                </div>
+              </div>
+              <div class="tree-node">
+                <div class="node-content">
+                  <div class="node-title"><i class="fas fa-users"></i> Networking</div>
+                  <div class="node-desc">Connect with professionals and join communities</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tree-node">
+            <div class="node-content">
+              <div class="node-title"><i class="fas fa-chart-line"></i> Career Development</div>
+              <div class="node-desc">Advance your professional journey</div>
+            </div>
+            <div class="tree-children">
+              <div class="tree-node">
+                <div class="node-content">
+                  <div class="node-title"><i class="fas fa-file-alt"></i> Job Search</div>
+                  <div class="node-desc">Prepare resume and practice interviews</div>
+                </div>
+              </div>
+              <div class="tree-node">
+                <div class="node-content">
+                  <div class="node-title"><i class="fas fa-sync-alt"></i> Continuous Learning</div>
+                  <div class="node-desc">Stay updated with industry trends</div>
+                </div>
+              </div>
+              <div class="tree-node">
+                <div class="node-content">
+                  <div class="node-title"><i class="fas fa-award"></i> Professional Growth</div>
+                  <div class="node-desc">Seek advancement opportunities and certifications</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="roadmap-download-btn" onclick="downloadRoadmap('${careerTitle}')">
+          <i class="fas fa-download"></i> Download Roadmap
+        </button>
+      `;
+    }
+
+    // Display roadmap in the modal
+    function displayRoadmap(roadmapData, careerTitle, careerDescription) {
+      const roadmapBody = document.getElementById('roadmapBody');
+      
+      let roadmapHTML = `
+        <div class="roadmap-intro">
+          <h3>${careerTitle}</h3>
+          <p>${careerDescription}</p>
+        </div>
+        <div class="roadmap-tree">
+      `;
+      
+      if (roadmapData.sections && Array.isArray(roadmapData.sections)) {
+        roadmapData.sections.forEach(section => {
+          roadmapHTML += `
+            <div class="tree-node">
+              <div class="node-content">
+                <div class="node-title"><i class="fas fa-layer-group"></i> ${section.title}</div>
+                <div class="node-desc">${section.description || ''}</div>
+              </div>
+          `;
+          
+          if (section.items && Array.isArray(section.items)) {
+            roadmapHTML += `<div class="tree-children">`;
+            
+            section.items.forEach(item => {
+              roadmapHTML += `
+                <div class="tree-node">
+                  <div class="node-content">
+                    <div class="node-title"><i class="fas fa-circle"></i> ${item.title}</div>
+                    <div class="node-desc">${item.description || ''}</div>
+                  </div>
+                </div>
+              `;
+            });
+            
+            roadmapHTML += `</div>`;
+          }
+          
+          roadmapHTML += `</div>`;
+        });
+      }
+      
+      roadmapHTML += `
+        </div>
+        <button class="roadmap-download-btn" onclick="downloadRoadmap('${careerTitle}')">
+          <i class="fas fa-download"></i> Download Roadmap
+        </button>
+      `;
+      
+      roadmapBody.innerHTML = roadmapHTML;
+    }
+
+    // Download roadmap as PDF using jsPDF
+    function downloadRoadmap(careerTitle = "Career") {
+      // Create a temporary div to hold the PDF content
+      const pdfContainer = document.createElement('div');
+      pdfContainer.style.position = 'absolute';
+      pdfContainer.style.left = '-9999px';
+      pdfContainer.style.width = '800px';
+      pdfContainer.style.padding = '20px';
+      pdfContainer.style.fontFamily = 'Inter, sans-serif';
+      pdfContainer.style.color = '#212529';
+      pdfContainer.style.backgroundColor = 'white';
+      
+      // Get the roadmap content
+      const roadmapBody = document.getElementById('roadmapBody');
+      const roadmapIntro = roadmapBody.querySelector('.roadmap-intro');
+      const roadmapTree = roadmapBody.querySelector('.roadmap-tree');
+      
+      // Create PDF header
+      const pdfHeader = document.createElement('div');
+      pdfHeader.className = 'pdf-header';
+      pdfHeader.innerHTML = `
+        <h1 class="pdf-title">${careerTitle} Career Roadmap</h1>
+        <p class="pdf-subtitle">Your personalized career development plan</p>
+        <p class="pdf-date">Generated on: ${new Date().toLocaleDateString()}</p>
+      `;
+      pdfContainer.appendChild(pdfHeader);
+      
+      // Add introduction
+      if (roadmapIntro) {
+        const introSection = document.createElement('div');
+        introSection.className = 'pdf-section';
+        introSection.innerHTML = `
+          <h2 class="pdf-section-title">Introduction</h2>
+          <p>${roadmapIntro.querySelector('p').textContent}</p>
+        `;
+        pdfContainer.appendChild(introSection);
+      }
+      
+      // Add roadmap content
+      if (roadmapTree) {
+        const treeNodes = roadmapTree.querySelectorAll('.tree-node');
+        
+        treeNodes.forEach(node => {
+          const nodeContent = node.querySelector('.node-content');
+          if (nodeContent) {
+            const section = document.createElement('div');
+            section.className = 'pdf-section';
+            
+            const title = nodeContent.querySelector('.node-title');
+            const desc = nodeContent.querySelector('.node-desc');
+            
+            section.innerHTML = `
+              <h2 class="pdf-section-title">${title.textContent}</h2>
+              ${desc ? `<p class="pdf-node-desc">${desc.textContent}</p>` : ''}
+            `;
+            
+            // Add child nodes
+            const childNodes = node.querySelectorAll('.tree-children .node-content');
+            if (childNodes.length > 0) {
+              childNodes.forEach(childNode => {
+                const childTitle = childNode.querySelector('.node-title');
+                const childDesc = childNode.querySelector('.node-desc');
+                
+                const childSection = document.createElement('div');
+                childSection.className = 'pdf-node';
+                childSection.innerHTML = `
+                  <h3 class="pdf-node-title">${childTitle.textContent}</h3>
+                  ${childDesc ? `<p class="pdf-node-desc">${childDesc.textContent}</p>` : ''}
+                `;
+                
+                section.appendChild(childSection);
+              });
+            }
+            
+            pdfContainer.appendChild(section);
+          }
+        });
+      }
+      
+      // Add footer
+      const pdfFooter = document.createElement('div');
+      pdfFooter.className = 'pdf-footer';
+      pdfFooter.innerHTML = `
+        <p>CareerPro Career Advisor | Your Personal Career Guide</p>
+        <p>Generated on ${new Date().toLocaleDateString()}</p>
+      `;
+      pdfContainer.appendChild(pdfFooter);
+      
+      // Add to document
+      document.body.appendChild(pdfContainer);
+      
+      // Create PDF using html2canvas and jsPDF
+      html2canvas(pdfContainer, {
+        scale: 2,
+        useCORS: true,
+        logging: false
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        
+        const imgWidth = 210; // A4 width in mm
+        const pageHeight = 297; // A4 height in mm
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        
+        let heightLeft = imgHeight;
+        let position = 0;
+        
+        // Add first page
+        doc.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+        
+        // Add additional pages if needed
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          doc.addPage();
+          doc.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+        
+        // Save the PDF
+        doc.save(`${careerTitle.replace(/\s+/g, '_')}_Roadmap.pdf`);
+        
+        // Clean up
+        document.body.removeChild(pdfContainer);
+      });
+    }
+
+    // Close roadmap modal
+    function closeRoadmap() {
+      const modal = document.getElementById('roadmapModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    // Close modal if clicked outside content
+    window.addEventListener('click', (event) => {
+      const modal = document.getElementById('roadmapModal');
+      if (event.target === modal) {
+        closeRoadmap();
+      }
+    });
+
+    // Restart the form
+    function restartForm() {
+      document.querySelector('.result-container').style.display = 'none';
+      document.querySelector('.form-container').style.display = 'block';
+      document.querySelector('.progress-container').style.display = 'flex';
+      
+      // Reset form
+      form.reset();
+      currentStep = 0;
+      
+      // Show first step
+      steps.forEach((step, index) => {
+        step.classList.remove('active');
+        if (index === 0) step.classList.add('active');
+      });
+      
+      // Reset progress
+      updateProgress(0);
+      
+      // Reset custom inputs
+      document.querySelectorAll('.custom-input').forEach(input => {
+        input.style.display = 'none';
+      });
+      
+      // Reset buttons
+      document.querySelectorAll('.next, #submit-btn').forEach(btn => {
+        btn.disabled = true;
+      });
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

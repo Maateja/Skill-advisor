@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | CareerPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* General Dashboard Layout */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        /* Responsive Grid Layout */
+        @media (min-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1.5fr 1fr 1fr;
+                grid-template-rows: auto auto auto;
+            }
+            .welcome-card {
+                grid-column: 1 / span 3;
+            }
+            .skills-card {
+                grid-column: 1 / span 1;
+            }
+            .recommendations-card {
+                grid-column: 2 / span 2;
+            }
+            .community-card {
+                grid-column: 1 / span 1;
+            }
+            .events-card {
+                grid-column: 2 / span 2;
+            }
+        }
+        
+        /* Card Styles */
+        .dashboard-card {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .dashboard-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            text-align: center;
+        }
+        .welcome-card h2 {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+        .welcome-card p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        /* Skills and Progress Card */
+        .skills-card h3 {
+            text-align: center;
+        }
+        .skills-chart-container {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Recommendations Card */
+        .recommendations-card {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .recommendation-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--light-bg);
+            border-radius: 10px;
+        }
+        .recommendation-item i {
+            font-size: 2rem;
+            margin-right: 1rem;
+            color: var(--primary-color);
+        }
+        .recommendation-content h4 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+        .recommendation-content p {
+            margin: 0.2rem 0 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Community & Events Card Styles */
+        .community-card, .events-card {
+            grid-column: 1 / span 1;
+        }
+
+        @media (min-width: 1024px) {
+            .community-card {
+                grid-column: 1 / span 2;
+            }
+            .events-card {
+                grid-column: 3 / span 1;
+            }
+        }
+
+        .community-card .highlight-item, .events-card .event-item {
+            padding: 1rem;
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 5px solid var(--secondary-color);
+        }
+        .community-card .highlight-item h4 {
+            margin: 0 0 0.5rem;
+        }
+        .community-card .highlight-item p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .events-card .event-item h4 {
+            margin: 0 0 0.5rem;
+            color: var(--primary-color);
+        }
+        .events-card .event-item p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .events-card .event-date {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" style="display: flex; justify-content: center; align-items: center; height: 100vh; font-size: 24px; color: #555;">
+        Loading...
+    </div>
+    
+    <div id="app-content-container" style="display: none;">
+        <header>
+            <nav class="premium-nav">
+                <div class="logo">
+                    <i class="fas fa-briefcase"></i>
+                    <span>CareerPro</span>
+                </div>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="index.html#assessment">Assessment</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="index.html#roadmap">Career Roadmap</a></li>
+                </ul>
+                <div class="auth-links">
+                    <a href="login.html" class="login-btn" id="login-signup-link" style="display: none;">Log In / Sign Up</a>
+                    <div id="user-profile" class="user-dropdown" style="display: none;">
+                        <i class="fas fa-user-circle"></i>
+                        <div class="dropdown-content">
+                            <a href="profile.html">Profile</a>
+                            <a href="#" id="logout-link">Log Out</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        
+        <main>
+            <div class="dashboard-container">
+                <div class="dashboard-card welcome-card">
+                    <h2 id="welcome-message">Welcome, User!</h2>
+                    <p>Your personal career journey starts here.</p>
+                </div>
+                
+                <div class="dashboard-card skills-card">
+                    <h3>Your Skills</h3>
+                    <div class="skills-chart-container">
+                        <canvas id="skillsChart"></canvas>
+                        <p id="no-skills-message" style="display: none; color: #666; text-align: center;">Add your skills on your <a href="profile.html">profile page</a> to see your progress here.</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card recommendations-card">
+                    <h3>Recommended for You</h3>
+                    <div class="recommendation-list" id="recommendations-list">
+                        <p style="text-align: center; color: #666;">Add your skills on your <a href="profile.html">profile page</a> to get personalized recommendations!</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card community-card">
+                    <h3>Success Stories</h3>
+                    <div class="highlight-list">
+                        <div class="highlight-item">
+                            <h4>"How I Landed My Dream Job as a Data Scientist"</h4>
+                            <p>A success story from a community member who used the AI advisor to pivot careers. <a href="#">Read more</a></p>
+                        </div>
+                        <div class="highlight-item">
+                            <h4>"Python 101 Discussion: Getting Started"</h4>
+                            <p>Join the conversation and ask your questions about learning Python for the first time. <a href="#">Join now</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card events-card">
+                    <h3>Upcoming Events</h3>
+                    <div class="event-list">
+                        <div class="event-item">
+                            <h4>"Webinar: Future of AI in Tech"</h4>
+                            <p class="event-date"><i class="fas fa-calendar-alt"></i> Oct 25, 2025</p>
+                            <p>Learn about emerging trends and network with industry leaders. <a href="#">Register</a></p>
+                        </div>
+                        <div class="event-item">
+                            <h4>"Virtual Workshop: Mastering Leadership Skills"</h4>
+                            <p class="event-date"><i class="fas fa-calendar-alt"></i> Nov 10, 2025</p>
+                            <p>A hands-on workshop to help you hone your soft skills. <a href="#">Register</a></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyBpTTk0xrFOFBEnBU62mWCgtbLbAYHZ3Is",
+          authDomain: "career-and-skill-advisor-1ce79.firebaseapp.com",
+          projectId: "career-and-skill-advisor-1ce79",
+          storageBucket: "career-and-skill-advisor-1ce79.firebasestorage.app",
+          messagingSenderId: "340590498085",
+          appId: "1:340590498085:web:914c8ee3c10517b00fcacc",
+          measurementId: "G-YC51LTSTDW"
+        };
+      
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const loading = document.getElementById("loading");
+            const appContent = document.getElementById("app-content-container");
+            const welcomeMessage = document.getElementById("welcome-message");
+            const skillsChartCanvas = document.getElementById("skillsChart");
+            const noSkillsMessage = document.getElementById("no-skills-message");
+            const recommendationsList = document.getElementById("recommendations-list");
+            
+            let skillChart = null;
+
+            auth.onAuthStateChanged(user => {
+                loading.style.display = 'none';
+                if (user) {
+                    appContent.style.display = 'block';
+
+                    const userDocRef = db.collection("users").doc(user.uid);
+
+                    userDocRef.get().then((doc) => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            if (userData.username) {
+                                welcomeMessage.textContent = `Welcome, ${userData.username}!`;
+                            } else {
+                                welcomeMessage.textContent = `Welcome, ${user.email}!`;
+                            }
+                            
+                            // Load skills for the chart and recommendations
+                            const skills = userData.skills || "";
+                            if (skills) {
+                                const skillsArray = skills.split(',').map(s => s.trim());
+                                const skillsData = skillsArray.map(skill => ({
+                                    name: skill,
+                                    // Placeholder proficiency. In a real app, this would be more dynamic.
+                                    proficiency: Math.floor(Math.random() * 50) + 50
+                                }));
+                                renderSkillsChart(skillsData);
+                                fetchRecommendations(skillsArray);
+                            } else {
+                                skillsChartCanvas.style.display = 'none';
+                                noSkillsMessage.style.display = 'block';
+                            }
+                        } else {
+                            welcomeMessage.textContent = `Welcome, New User!`;
+                        }
+                    });
+
+                } else {
+                    window.location.href = "login.html";
+                }
+            });
+
+            function renderSkillsChart(skillsData) {
+                if (skillChart) {
+                    skillChart.destroy();
+                }
+
+                if (skillsData.length === 0) {
+                    skillsChartCanvas.style.display = 'none';
+                    noSkillsMessage.style.display = 'block';
+                    return;
+                }
+
+                skillsChartCanvas.style.display = 'block';
+                noSkillsMessage.style.display = 'none';
+
+                const labels = skillsData.map(s => s.name);
+                const data = skillsData.map(s => s.proficiency);
+
+                skillChart = new Chart(skillsChartCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Skill Proficiency (%)',
+                            data: data,
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // This is a placeholder function. In a real app, you would use a more
+            // sophisticated recommendation engine or API.
+            function fetchRecommendations(userSkills) {
+                let recommendations = [];
+
+                if (userSkills.includes('python') || userSkills.includes('data analysis')) {
+                    recommendations.push({ title: "Data Scientist", desc: "Build predictive models and analyze large datasets.", icon: "fas fa-chart-line" });
+                    recommendations.push({ title: "Machine Learning Engineer", desc: "Develop and deploy AI models for intelligent systems.", icon: "fas fa-robot" });
+                }
+                if (userSkills.includes('marketing') || userSkills.includes('digital marketing')) {
+                    recommendations.push({ title: "Digital Marketing Manager", desc: "Strategize and execute online marketing campaigns.", icon: "fas fa-bullhorn" });
+                    recommendations.push({ title: "Content Strategist", desc: "Create and manage engaging content to attract an audience.", icon: "fas fa-pen-nib" });
+                }
+                if (userSkills.includes('leadership') || userSkills.includes('communication')) {
+                    recommendations.push({ title: "Project Manager", desc: "Lead teams and manage projects from start to finish.", icon: "fas fa-project-diagram" });
+                }
+                
+                if (recommendations.length > 0) {
+                    recommendationsList.innerHTML = recommendations.map(rec => `
+                        <div class="recommendation-item">
+                            <i class="${rec.icon}"></i>
+                            <div class="recommendation-content">
+                                <h4>${rec.title}</h4>
+                                <p>${rec.desc}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    recommendationsList.innerHTML = `<p style="text-align: center; color: #666;">We couldn't find specific recommendations based on your skills. Try adding more!</p>`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
