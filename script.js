@@ -414,4 +414,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
         submitQuizBtn.style.display = 'none';
     }
+    document.querySelectorAll(".progress-bar").forEach(bar => {
+        const progress = bar.getAttribute("data-progress");
+        const fill = bar.querySelector(".progress-fill");
+        if (fill) {
+            fill.style.width = progress + "%";
+        }
+    });
+
+    console.log("Script initialization complete");
 });
